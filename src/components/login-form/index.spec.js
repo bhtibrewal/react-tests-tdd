@@ -3,6 +3,7 @@ import { act } from "react-dom/test-utils";
 import LoginForm from "./index";
 
 describe("login form validation", () => {
+    const handleLogin = jest.fn()
     test("it checks button disabled on not valid email ", async () => {
         // Assemble
         const { getByRole } = render(<LoginForm />)
@@ -13,45 +14,36 @@ describe("login form validation", () => {
     })
     test("it check field errors", async () => {
         // assemble
-        const { getByRole, getByLabelText, getByText } = render(<LoginForm />);
+        const { getByRole, getByLabelText, getByText } = render(<LoginForm handleLogin={handleLogin} />);
         const nameInput = getByLabelText(/Name/i);;
         const emailInput = getByLabelText(/email/i);
-        const submitBtn = getByRole("button", { type: "submit" })
+        const submitBtn = getByRole("button", { type: /submit/i })
 
         // act
-        await act(async () => {
-            fireEvent.change(nameInput, { target: { value: "Bhavika" } });
-            fireEvent.change(emailInput, { target: { value: "bhtibrewal@gmail.com" } });
-        })
-        await act(async () => {
-            fireEvent.click(submitBtn);
-        })
+
+        fireEvent.change(nameInput, { target: { value: "Bhavika" } });
+        fireEvent.change(emailInput, { target: { value: "bhtibrewalgmail.com" } });
+        fireEvent.click(submitBtn);
 
         // assert
         expect(getByText("not a valid email")).toBeInTheDocument()
     })
+
     test('it checks fire submit', async () => {
         // assemble
-        const { getByRole, getByLabelText, getByTestId } = render(<LoginForm />);
+        const { getByRole, getByLabelText, getByTestId } = render(<LoginForm handleLogin={handleLogin} />);
 
         const nameInput = getByLabelText(/Name/i);;
         const emailInput = getByLabelText(/email/i);
-        const submitBtn = getByRole("button", { type: "submit" })
-        const handleSubmit = jest.fn();
-        const handleLogin = jest.fn()
+        const submitBtn = getByRole("button", { type: /submit/i })
 
         // act
-        await act(async () => {
-            fireEvent.change(nameInput, { target: { value: "Bhavika" } });
-            fireEvent.change(emailInput, { target: { value: "bhtibrewal@gmail.com" } });
-        })
-        await act(async () => {
-            fireEvent.submit(getByTestId("form"));
-        })
+        fireEvent.change(nameInput, { target: { value: "Bhavika" } });
+        fireEvent.change(emailInput, { target: { value: "bhtibrewal@gmail.com" } });
+        fireEvent.submit(getByTestId("form"));
+
         // assert
         expect(submitBtn).toBeEnabled();
-        expect(handleSubmit).toBeCalledTimes(1);
-
-
+        expect(handleLogin).toBeCalledWith({ name: "Bhavika", email: "bhtibrewal@gmail.com" })
     })
 })

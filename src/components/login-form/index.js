@@ -1,7 +1,7 @@
 import { useState } from "react"
 import StarbucksInput from "../starbucks-input"
 
-const LoginForm = ({ handleLogin = () => { } }) => {
+const LoginForm = ({ handleLogin }) => {
     const [formData, setFormData] = useState({ name: "", email: "" });
     const [emailError, setEmailError] = useState("");
 
